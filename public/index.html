@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OTOMAGIC</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript" src="/javascripts/jQueryRotate.js"></script>
+    <link href="/stylesheets/base.css" rel="Stylesheet" type="text/css" />
+	<link rel="shortcut icon" href="/images/favicon.ico">
+  </head>
+  <body>
+      <div id="content">
+        <div id="header">
+          <img src="/images/otomagiclogo.png" style="vertical-align:middle;"> BETA
+        </div>
+		<div id="main" style="width:1400px; margin:auto; padding:30px;">
+			<canvas id="canvas-left" width="400" height="290" style="float:left;"></canvas>
+			<canvas id="canvas-right" width="600" height="290" style="float:right;"></canvas>
+			<div id="logo" style="margin:auto;">
+				<div id="logo-image">
+					<img src="/images/logo_medium.png" id="logo-main" style="width:300px; float:left;">
+					<img src="/images/logo_side.png" id="logo-side" style="height:300px; float:left;">
+				</div>		
+				<div id="fb-root"></div>
+			</div>
+			<div class="clear"></div>
+		<div id="footer">
+		  <div id="login-image">
+			<a href="javascript:void(0)" onclick="login(); return false;"><img src="/images/Facebook.png"></a>
+		  </div>
+		  <div id="loading" style="display:none;">
+		  	Loading...<br/>
+		  	<img src="/images/ajax-loader.gif">
+		  </div>
+		  <div id="we-are" style="margin-top:20px;">
+		  	created by BstnHouse.
+		  </div>
+		</div>
+       </div>
+	  </div>
+    </div>
+	<script>	
+	/* facebook */
+	  window.fbAsyncInit = function() {
+		  	FB.init({
+			appId      : '301955646531244', // App ID
+			channelUrl : '/channel.html', // Channel File
+			status     : true, // check login status
+			cookie     : true, // enable cookies to allow the server to access the session
+			xfbml      : true  // parse XFBML
+			});
+			// Additional initialization code here
+			ctxl = document.getElementById("canvas-left").getContext("2d");
+			ctxr = document.getElementById("canvas-right").getContext("2d");
+		 	int = setInterval(canvasfunc,500);
+			setInterval(Ro,20); //20ミリ秒ごとに繰り返しRo()を呼び出す。
+	  };
+		
+	/* rotation logo */
+		var cnt = 0;
+		function Ro(){
+			$('#logo-main').rotate((cnt)); //tilt (cnt) degree
+			cnt++;
+		}
+	/* Canvas Animation */
+	var int,ctxl,ctxr;
+ 
+	var canvasfunc = function(){
+		ctxl.clearRect(-10,-10,600,600);
+		ctxr.clearRect(-10,-10,600,600);
+		ctxl.globalAlpha = 0.7;
+		ctxr.globalAlpha = 0.7;
+		ArrangeRect();
+ 	};
+
+  	function ArrangeRect(){
+		p = [20,65,110,155,200,245,290]
+		q = [20,65,110,155,200,245,290,335,380,425,470,515]
+		for(i = 0; i < p.length; i++){
+			for(j = 0; j < p.length; j++){
+				ctxl.fillStyle = 'rgb(0, ' + Rnd() + ',' + BlueRnd + ')';
+				ctxl.fillRect(p[i], p[j], 40, 40);
+			}
+		}
+		for(i = 0; i < q.length; i++){
+			for(j = 0; j < p.length; j++){
+				ctxr.fillStyle = 'rgb(0, ' + Rnd() + ',' + BlueRnd + ')';
+				ctxr.fillRect(q[i], p[j], 40, 40);
+			}
+		}	
+	}
+  	function Rnd(){
+	    return (Math.floor(Math.random()*256));
+	}	
+  	var BlueRnd = function(){
+	  	mn = 150;
+		mx = 256;
+		return (Math.round(Math.random()*(mx-mn))+mn);
+	}
+	
+	// Load the SDK Asynchronously
+		  (function(d){
+			       var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+				        js = d.createElement('script'); js.id = id; js.async = true;
+						     js.src = "//connect.facebook.net/en_US/all.js";
+							      d.getElementsByTagName('head')[0].appendChild(js);
+								     }(document))
+			    function login(){
+							$("#login-image").hide();
+							$("#loading").show();
+							FB.login(function(response) {
+								if (response.authResponse) {
+										console.log('Welcome!  Fetching your information.... ');
+										FB.api('/me', function(response){
+											AuthUserData(response.id, response.name, response.gender);
+										});
+								} else {
+										console.log('User cancelled login or did not fully authorize.');
+								}
+							}, {scope: 'publish_stream, email,user_about_me,friends_about_me,user_interests,friends_interests,user_likes,friends_likes'});
+			}
+
+		function AuthUserData(id, name, gender){
+			$.ajax({
+					url: "/users/login",
+					type: "POST",
+					data: "user[facebook_id]=" + id + "&user[facebook_name]=" + name + "&user[facebook_gender]=" + gender,
+					dataType: 'json',
+					error: function(){
+						console.log('server error.');
+					},
+					success: function(json){
+						if(json.status == "ok"){
+							location.href = "/mypage";
+						}else{
+							console.log('login error.');
+						}
+					}
+			});
+		}
+	</script>
+  </body>
+</html>

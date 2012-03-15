@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>OTOMAGIC</title>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script type="text/javascript" src="/javascripts/jQueryRotate.js"></script>
+  <link href="/stylesheets/base.css" rel="Stylesheet" type="text/css" />
+  <link rel="shortcut icon" href="/images/favicon.ico">
+</head>
+
+<body>
+  <!-- This file lives in public/404.html -->
+ <div id="content">
+  <div class="dialog" style="margin:auto; text-align:center;"> 
+		<div id="logo-error" style="margin:100px auto 30px;">
+			<h1>OTOMAGIC 500</h1>
+			<div id="logo-image-error" style="margin:auto;">
+				<img src="/images/logo_medium.png" id="logo-main" style="width:300px;">
+				<img src="/images/logo_side.png" id="logo-side" style="height:300px;">
+			</div>
+			<p>We're Sorry, but something went wrong.</p>
+		</div>
+  </div>
+ </div>
+<script>
+$(function(){
+	setInterval(Ro,5);	
+});
+/* rotation logo */
+var cnt = 0;
+function Ro(){
+	$('#logo-main').rotate((cnt)); //tilt (cnt) degree
+	cnt++;
+}
+</script>
+</body>
+</html>

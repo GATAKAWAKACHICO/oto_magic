@@ -1,0 +1,134 @@
+<div id="user-info">
+	<div id="profile" style="display:none;">
+		Welcome!<br>
+		<span id="name"></span>
+	</div>
+</div>
+<div id="your-love" style="display:none;">Your Love <%= image_tag 'heart.png' %></div>
+<div id="your-favorite-artists" style="display:block; width:600px; height:300px; overflow-y: scroll; margin:auto; text-align:left;">
+	<div id="artists" style="display:none;"></div>
+	<div id="loading" style="position: relative; text-align:center; margin:100px auto 0px;">
+		Loading...<br>
+		<%= image_tag 'ajax-loader.gif' %>
+	</div>
+</div>
+<div id="start-dj" style="display:none;">
+	<a href="javascript:void(0)" onclick="start(); return false;">start</a>
+</div>
+<script>
+	var facebook_id;
+	var facebook_name;
+	var likes = [];
+	var artist_name;
+	window.fbAsyncInit = function() {
+		FB.init({
+			appId      : '301955646531244', // App ID
+			channelUrl : '/channel.html', // Channel File
+			status     : true, // check login status
+			cookie     : true, // enable cookies to allow the server to access the session
+			xfbml      : true  // parse XFBML
+		});
+	    // Additional initialization code here
+		//Check login status
+		FB.getLoginStatus(function(response) {
+		if (response.status === 'connected') {
+			// the user is logged in and connected to your
+			// app, and response.authResponse supplies
+			// the user's ID, a valid access token, a signed
+			// request, and the time the access token 
+			// and signed request each expire
+			var uid = response.authResponse.userID;
+			var accessToken = response.authResponse.accessToken;
+			FB.api('/me', function(response) {
+				$('#profile').show();
+				facebook_id = response.id;
+				facebook_name = response.name;
+				$('#name').append('<img src="' + 'https://graph.facebook.com/' + facebook_id + '/picture">');
+				$('#name').append(facebook_name);
+				$('#your-love').show();
+				FB.api('/me/music', function(response) {
+					$('#profile').show();
+					if(response){
+						if(response.data[0] == null){
+							$("#loading").text("Please regist your favorite artists on Facebook.");
+							$("#loading").append("<br>");
+							$("#loading").append('<a href="http://www.facebook.com">Regist my favorite artists on Facebook.</a>');
+						}else{
+							for(i = 0; i < response.data.length; i++){
+								likes.push(response.data[i].name);
+								artist_name = response.data[i].name;
+								getFromFbLikeData(artist_name,'https://graph.facebook.com/' + response.data[i].id);
+							}
+						sendFbLikeData(facebook_id, likes);
+						}
+					}else{
+						$("#loading").text("Something goes wrong.");
+					}
+				});
+			});
+		 } else if (response.status === 'not_authorized') {
+			// the user is logged in to Facebook, 
+			//but not connected to the app
+			//location.href = "/";
+			$("#loading").text("Please Login OTOMAGIC.");
+		 } else {
+			// the user isn't even logged in to Facebook.
+			//location.href = "/";
+			$("#loading").text("Please Login Facebook.");
+			console.log("Please Login Facebook.");
+		 }
+		});
+
+	};
+
+	  // Load the SDK Asynchronously
+	    (function(d){
+			     var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+				 js = d.createElement('script'); js.id = id; js.async = true;
+				 js.src = "//connect.facebook.net/en_US/all.js";
+				 d.getElementsByTagName('head')[0].appendChild(js);
+			}(document));
+		   
+		      function getFromFbLikeData(artistName,url){
+				  		$.ajax({
+							url: url,
+							type: 'GET',
+							dataType: 'jsonp',
+							error: function(){
+																								
+							},
+							success: function (json){
+								$('#artists').append('<img src="' + json.picture + '">');
+								$('#artists').append(artistName + '<br>');
+							}
+						});
+			  }
+								
+				function sendFbLikeData(id, artists){
+						artists_param = '';
+						for (i = 0; i < artists.length; i++){
+							artists_param += '&artists_data[artists][]=' + artists[i];
+						}
+						$.ajax({
+							url: '/user_artists/regist?' + 'artists_data[facebook_id]='+ id + artists_param,
+							type: 'GET',
+							//data: "artists_data[facebook_id]="+ id + artists_param,
+							dataType: 'json',
+							error: function(){
+								$("#loading").text("An error occured.");																						  },
+							success: function (json){
+								if(json.status == "ok"){
+									$("#loading").hide();
+									$("#artists").show();
+									$("#start-dj").show();
+								}else{
+									$("#loading").text("Server error occured.");	
+								}
+							}
+						});
+				}
+
+				function start(){
+					location.href = '/player';
+				}
+</script>

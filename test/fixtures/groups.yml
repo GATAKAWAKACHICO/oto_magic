@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  organizer: MyString
+  participant1: MyString
+  participant2: MyString
+  participant3: MyString
+
+two:
+  organizer: MyString
+  participant1: MyString
+  participant2: MyString
+  participant3: MyString

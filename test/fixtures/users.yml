@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  facebook_id: MyString
+  facebook_name: MyString
+  facebook_gender: MyString
+  facebook_email: MyString
+
+two:
+  facebook_id: MyString
+  facebook_name: MyString
+  facebook_gender: MyString
+  facebook_email: MyString

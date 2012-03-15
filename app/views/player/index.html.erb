@@ -1,0 +1,451 @@
+<%= javascript_include_tag 'swfobject.js' %>
+<%= javascript_include_tag 'jquery.timers.js' %>
+<%= javascript_include_tag 'jQueryRotate.js' %>
+<div id="choose-friends" style="display:none;">
+	<div id="profile">
+		Welcome!<br>
+		<span id="name"></span>
+	</div>
+	<div id="friends-screen" style="width:500px; height:300px; display:block; margin:auto; overflow-y:scroll;">
+		<div id="make-a-group" style="position:relative; margin:100px auto 0px;">
+			<a href="javascript:void(0)" onclick="loadAjaxData(); return false;"><%= image_tag 'letstartbutton.png' %></a>
+		</div>
+		<div id="friends" style="display:none; text-align:left;">
+			<div id="friends-message" style="text-align:center;"></div>
+		</div>
+		<div id="loading2" style="display:none; position:relative; margin:100px auto 0px;">
+			Now Loading...<span id="progress-rate">0</span><br>
+			<%= image_tag 'ajax-loader.gif' %>
+		</div>
+	</div>	
+	<div id="start" style="display:none;">
+		<a href="javascript:void(0)" onclick="GetVals(); return false;">Start DJ</a>
+	</div>
+	<div id="invite-friends">
+		<a href="javascript:void(0)" onclick="sendRequestViaMultiFriendSelector(); return false;"><%= image_tag 'invitebutton.png' %></a>	
+	</div>
+</div>
+
+<div id="loading1" style="width:600px; height:300px; margin:auto;">
+	<div style="position:relative; margin:100px auto 0px;">
+			Now Loading...<br>
+			<%= image_tag 'ajax-loader.gif' %>
+	</div>
+</div>
+
+<div id="play-screen-otomagic" style="display:none; width:760px; margin:auto;">
+	<div id="left-bar" style="float:left; margin-right:10px;">
+		<div id="now-playing" style="width:250px; height:150px; border:3px solid #000000;">
+			<div>Now!!</div>
+			<div id="artist"></div>
+			<div id="title"></div>
+			<div id="who-likes-now"><span id="who-likes"></span><%= image_tag 'heart.png', :style => 'vertical-align:middle;'%></div>
+		</div>
+		<div id="next" style="width:250px; height:150px; border:3px solid #000000;">
+			<div>Next...</div>
+			<div id="artist-next"></div>
+			<div id="title-next"></div>
+			<div id="who-likes-next"></div>
+		</div>
+		<div id="next2" style="width:250px; height:150px; border:3px solid #000000;">
+			<div>After Next...</div>
+			<div id="artist-after-next"></div>
+			<div id="title-after-next"></div>
+			<div id="who-likes-after-next"></div>
+		</div>
+	</div>
+	<div id="player" style="width:320px; text-align:center; float:left;">
+		<div id="ytapiplayer">
+			You need Flash player 8+ and JavaScript enabled to view this video.<br>
+			<a href="http://get.adobe.com/jp/flashplayer/">Get Flash Adobe Player.</a>		
+		</div>
+		<div id="controllers">
+			<div id="controller">
+				<%= image_tag 'otomagic_button/stop.png', :id => 'stop_btn' %>
+				<%= image_tag 'otomagic_button/playbutton.png', :id => 'play_btn' %>
+				<%= image_tag 'otomagic_button/nextbutton.png', :id => 'next_btn' %>
+			</div>
+			<div id="volume">
+			</div>
+		</div>
+	</div>
+	<div id="record-display" style="float:left;">
+		<div><%= image_tag 'record1.png', :id => 'record1' %></div>
+		<div><%= image_tag 'record2.png', :id => 'record2' %></div>
+		<div><%= image_tag 'record3.png', :id => 'record3' %></div>
+	</div>
+</div>
+<div class="clear"></div>
+<script>
+	var params = { allowScriptAccess: "always" };
+	var atts = { id: "myytplayer" };
+	swfobject.embedSWF("http://www.youtube.com/apiplayer?enablejsapi=1&version=3&playerapiid=ytplayer", "ytapiplayer", "320", "240", "8", null, null, params, atts);
+	var organizer,fbfriend;
+	var progress = 1;
+	var registration = 0;
+	var chkboxid = new Array();
+	var chkboxnum = 1;
+	var likes;
+	var max_num = 0;
+	var artists = new Array();//artist*facebook_id*facebook_name
+	var k = 0; //human number of groups
+	var a = 0; //the number of Using YtAPI
+	var t = 0;
+	var music = new Array();
+	var ytdataflg = 0;
+	var m = 0;
+	var n;
+	var now,next,next2,next3;
+	var playlist = ["init", "init", "init"]; //songs now plays, the next, and the next to next
+	var playlist1 = "init";
+	var playlist2,playlist3;
+	var total_songs = new Array();
+	var record = 0;
+
+	function sendRequestViaMultiFriendSelector() {
+		FB.ui({method: 'apprequests',
+			message: 'OTOMAGIC Request'
+		}, requestCallback);
+	}
+
+	function requestCallback(response){
+		console.log(response);
+	}
+
+	window.fbAsyncInit = function() {
+		      FB.init({	
+				appId      : '301955646531244', // App ID
+				channelUrl : '/channel.html', // Channel File
+				status     : true, // check login status
+				cookie     : true, // enable cookies to allow the server to access the session
+				xfbml      : true  // parse XFBML
+			});
+	    	// Additional initialization code here
+			// Check login status
+			FB.getLoginStatus(function(response) {
+				console.log(response);
+				if (response.status === 'connected') {
+				// the user is logged in and connected to your
+				// app, and response.authResponse supplies
+				// the user's ID, a valid access token, a signed
+				// request, and the time the access token 
+				// and signed request each expire
+				var uid = response.authResponse.userID;
+				var accessToken = response.authResponse.accessToken;
+				FB.api('/me', function(response) {
+					$('#name').append('<img src="' + 'https://graph.facebook.com/' + response.id + '/picture">');
+					$('#name').append(response.name);
+					organizer = response.id;
+				});
+				FB.api('/me/friends', function(response) {
+					if(response){
+						fbfriend = response;
+						$('#loading1').hide();
+						$('#choose-friends').show();
+					}else{
+						$('#loading1').text('Sorry, Something goes wrong.')
+					}
+				});
+			} else if (response.status === 'not_authorized') {
+				// the user is logged in to Facebook, 
+				//but not connected to the app
+				//location.href = "index.html";
+			} else {
+				// the user isn't even logged in to Facebook.
+				//location.href = "index.html";
+			}
+		});
+	};
+
+	  // Load the SDK Asynchronously
+	    (function(d){
+			 var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+			 js = d.createElement('script'); js.id = id; js.async = true;
+			 js.src = "//connect.facebook.net/en_US/all.js";
+			 d.getElementsByTagName('head')[0].appendChild(js);
+		}(document));
+	
+	function loadAjaxData(){
+		$('#make-a-group').hide();
+		$('#loading2').show();
+		for(i = 0; i < fbfriend.data.length; i++){
+			getAjaxData(fbfriend.data[i].id, fbfriend.data[i].name, 'https://graph.facebook.com/' + fbfriend.data[i].id + '/picture');
+		}
+	}
+
+	function getAjaxData(facebook_id, facebook_name, picture){
+		$.ajax({
+				url: '/users/djdata?facebook_id=' + facebook_id,
+				type: 'GET',
+				//data: "id=" + facebook_id,
+				dataType: 'json',
+				error: function(){
+					$("#loading2").text('Sorry, Something goes wrong.');
+				},
+				success: function (json){
+					if(json.status == "regist"){
+						$('#friends').append('<input type="checkbox" name="omaira" class="otomagic-checkbox" id="'+ facebook_name + '" value="' + facebook_id +'">');
+						$('#friends').append('<img src="' + picture + '">');
+						$('#friends').append( facebook_name+ '<br>');
+						chkboxid.push(facebook_name);
+						chkboxnum++;
+						registration++;
+					}
+					progress++;
+					progressrate = progress / fbfriend.data.length * 100;
+					progressrate = Math.floor(progressrate);
+					$("#progress-rate").text(progressrate);
+					if(progress == fbfriend.data.length) {
+						if(registration == 0){
+							$("#friends-message").append("Your Friends haven't logged in OTOMAGIC yet." + "<br>");
+							$("#friends-message").append("Let's invite your friends to OTOMAGIC!");
+							$("#friends-message").css('padding-top','100px');
+							$("#loading2").hide();
+							$("#friends").show();
+							$("#start").show();
+						}else{
+							$("#friends-message").append("<hr>");
+							$("#friends-message").append("Your Music Partners!");
+							$("#friends-message").append("<hr>");
+							$("#friends-message").css("font-size","22px");
+							$("#loading2").hide();
+							$("#friends").show();
+							$("#start").show();
+						}
+					}
+				}
+		});
+	}
+
+	function GetVals(){
+		var AllVals = new Array();
+		$("input[name=omaira]:checked").map(function(){
+			AllVals.push($(this).val());
+		});
+		var ids = "";
+		for (i = 0; i < AllVals.length; i++){
+			ids += '&users[ids][]=' + AllVals[i];
+		}
+		url = '/user_artists/like?users[organizer]=' + organizer + ids;
+		getLikeArtistsData(url);
+		$("#choose-friends").hide();
+		$("#loading1").show();
+	}
+
+	function getLikeArtistsData(url){
+		$.ajax({
+			url: url,
+			type: 'GET',
+			dataType: 'json',
+			error: function(json){
+				$("#loading1").text('Sorry, Somthing goes wrong.');
+			},
+			success: function(json){
+				if(json.status == "over"){
+					$("#loading1").text('You can choose less than' + json.max +' friends.');
+				}else if(json.status == "error"){
+					$("#loading1").text('Sorry, Something goes wrong.');
+				}else if(json.status == "ok"){
+					likes = json.data;
+					if (likes.length == 1){
+						for(i = 0; i < likes[0].length; i++){
+							artists[artists.length] = likes[0][i].user_artist.artist_name + '*' + likes[0][i].user_artist.facebook_name;
+						}
+					}else{
+						for (i = 0; i < likes.length; i++){
+							if(i == 0){
+								
+							}else{
+								if(likes[i].length > likes[i-1].length){
+									max_num = likes[i].length;
+								}else{
+									max_num = likes[i-1].length;
+								}
+							}
+						}
+
+						for (i = 0; i < max_num; i++){
+							for (j = 0; j < likes.length; j++){
+								if(typeof(likes[j][i]) == "undefined"){
+									
+								}else{
+									artists[artists.length] = likes[j][i].user_artist.artist_name + '*' + likes[j][i].user_artist.facebook_name;
+								}	
+							}
+						}	
+					}
+					console.log(artists);
+					getMusicData();
+				}
+			}
+		});
+	}
+
+	function getMusicData(){
+		if(a < artists.length && t == 0){
+			word = artists[a].split('*');
+			facebook_name = word[1];
+			word = word[0].replace('/\s/','+');
+			url = "http://gdata.youtube.com/feeds/api/videos?q=" + word + "&format=5&alt=json";
+			$.ajax({
+				url: url,
+				type: 'GET',
+				dataType: 'json',
+				error: function(){
+					if(a == 0){
+						$("#loading1").text('Sorry, Something goes wrong.');
+					}
+				},
+				success: function (json){
+					var musicdata = {};
+					for(i = 0; i < json.feed.entry.length; i++){
+						musicdata = {};
+						musicdata['url'] = json.feed.entry[i].media$group.media$content[0].url;
+						musicdata['artist'] = word;
+						musicdata['title'] = json.feed.entry[i].media$group.media$title.$t;
+						musicdata['user_name'] = facebook_name;
+						music.push(musicdata);
+					}
+
+					total_songs.push(json.feed.entry.length);
+					console.log(total_songs);
+					if(a == 0){
+						$("#loading1").hide();
+						$("#play-screen-otomagic").show();
+					}
+					a++;
+					console.log('a=' + a);
+					console.log('music=' + music[getRandomNumber()]['title'] + music[5]['artist']);
+				}
+			});
+		}else{
+			/* nothing to do */	
+			a++;
+			console.log('a=' + a);								
+		}	
+	}
+	
+	$(function(){
+		var cnt1 = 0;
+		var cnt2 = 0;
+		var cnt3 = 0;
+		function RotateRecord(){
+			$("#record1").rotate((cnt1));
+			cnt1++;
+		}
+		function RotateRecord2(){
+			$("#record2").rotate((cnt2));
+			cnt2--;
+		}
+		function RotateRecord3(){
+			$("#record3").rotate((cnt3));
+			cnt3++;
+		}
+		function ManageRotateSpeed(a,b,c){
+			setInterval(RotateRecord, a);
+			setInterval(RotateRecord2, b);
+			setInterval(RotateRecord3, c);
+		}
+		ManageRotateSpeed(100,20,50);
+		
+		$("#play_btn").toggle(function(){
+			if(ytplayer) ytplayer.playVideo();
+		},function(){
+			if(ytplayer) ytplayer.pauseVideo();
+		});
+		
+		$("#stop_btn").click(function(){
+			if(ytplayer) ytplayer.stopVideo();
+		});
+		
+		$("#next_btn").click(function(){
+			getMusicData();
+			if(playlist1 == "init"){
+				playlist1 = getRandomNumber();
+				playlist2 = getRandomNumber();
+				playlist3 = getRandomNumber();
+			}else{
+				$("#artist-next").text('Artist:' + music[playlist2]['artist']);
+				$("#title-next").text('Title:' + music[playlist2]['title']);
+				$("#artist-after-next").text('Artist:' + music[playlist3]['artist']);
+				$("#title-after-next").text('Title:' + music[playlist3]['title']);
+			}
+			now = music[playlist1];
+			ytplayer.cueVideoByUrl(now['url']);
+			ytplayer.playVideo();
+			$("#artist").text('Artist:' + now['artist']);
+			$("#title").text('Title:' + now['title']);
+			$('#who-likes').text(now['user_name']);
+			playlist1 = playlist2;
+			playlist2 = playlist3;
+			playlist3 = getRandomNumber();
+		});
+	});
+
+		function onYouTubePlayerReady(playerId) {
+			ytplayer = document.getElementById("myytplayer");
+			if (ytplayer){
+				playlist1 = getRandomNumber();
+				playlist2 = getRandomNumber();
+				playlist3 = getRandomNumber();
+				now = music[playlist1];
+				ytplayer.cueVideoByUrl(now['url']);
+				$("#artist").text('Artist:' + now['artist']);
+				$("#title").text('Title:' + now['title']);
+				$("#who-likes").text(now['user_name']);
+			}
+			ytplayer.addEventListener('onStateChange', 'onYouTubePlayerStateChange' );
+		}	
+
+
+		function onYouTubePlayerStateChange(state) {
+			if(a != 0 && state == 0){
+				getMusicData();
+				if(playlist1 == "init"){
+					playlist1 = getRandomNumber();
+					playlist2 = getRandomNumber();
+					playlist3 = getRandomNumber();
+				}else{
+					$("#artist-next").text('Artist:' + music[playlist2]['artist']);
+					$("#title-next").text('Title:' + music[playlist2]['title']);
+					$("#artist-after-next").text('Artist:' + music[playlist3]['artist']);
+					$("#title-after-next").text('Title:' + music[playlist3]['title']);
+				}
+				now = music[playlist1];
+				ytplayer.cueVideoByUrl(now['url']);
+				ytplayer.playVideo();
+				$("#artist").text('Artist:' + now['artist']);
+				$("#title").text('Title:' + now['title']);
+				$('#who-likes').text(now['user_name']);
+				playlist1 = playlist2;
+				playlist2 = playlist3;
+				playlist3 = getRandomNumber();
+			}
+			console.log('state=' + state);
+		}
+
+	function getRandomNumber(){
+		r = Math.floor( Math.random() * music.length );
+		//console.log('random=' + r);
+		return r;
+	}
+
+	function getRandomNumberInTotalSongs(){
+		if(a <= total_songs.length){
+			s = Math.floor( Math.random() * total_songs[a-1]);
+			for (i = 0; i < a-1; i++){
+				s += total_songs[i];
+			}
+			return s;
+		}else{
+			a = 0;
+			t = 1;
+		}
+	}
+
+	function getFirstRandomNumber(){
+		s = Math.floor( Math.random() * total_songs[a]);
+		console.log('s=' + s);
+		return s;
+	}
+</script>
