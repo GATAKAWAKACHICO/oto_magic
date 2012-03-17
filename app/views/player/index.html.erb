@@ -1,6 +1,11 @@
 <%= javascript_include_tag 'swfobject.js' %>
 <%= javascript_include_tag 'jquery.timers.js' %>
 <%= javascript_include_tag 'jQueryRotate.js' %>
+<%= javascript_include_tag 'ui/jquery.ui.core.js' %>
+<%= javascript_include_tag 'ui/jquery.ui.widget.js' %>
+<%= javascript_include_tag 'ui/jquery.ui.mouse.js' %>
+<%= javascript_include_tag 'ui/jquery.ui.slider.js' %>
+<%= stylesheet_link_tag 'themes/ui-darkness/jquery-ui-1.8.17.custom.css' %>
 <div id="choose-friends" style="display:none;">
 	<div id="profile">
 		Welcome!<br>
@@ -66,6 +71,12 @@
 				<%= image_tag 'otomagic_button/nextbutton.png', :id => 'next_btn' %>
 			</div>
 			<div id="volume">
+				<%= image_tag 'volumebutton.png', :id => 'vol', :style => 'vertical-align:middle; float:left;' %>
+				<div id="slider" style="width:200px; float:left; position:relative; margin-top:5px; margin-left:12px;"></div>
+				<div class="clear"></div>
+			</div>
+			<div id="share-on-social">
+				<a href="javascript:void(0)" style="color:#00ccff;" onclick="PostToFeed(); return false;">share on facebook</a>
 			</div>
 		</div>
 	</div>
@@ -76,6 +87,7 @@
 	</div>
 </div>
 <div class="clear"></div>
+<div id="powered_by_yt"><%= link_to image_tag('yt_powered_by_black.png', {:style => 'width:60px;'}), 'http://www.youtube.com' %></div>
 <script>
 	var params = { allowScriptAccess: "always" };
 	var atts = { id: "myytplayer" };
@@ -323,8 +335,8 @@
 			a++;
 			console.log('a=' + a);								
 		}	
-	}
-	
+	}	
+
 	$(function(){
 		var cnt1 = 0;
 		var cnt2 = 0;
@@ -379,6 +391,17 @@
 			playlist1 = playlist2;
 			playlist2 = playlist3;
 			playlist3 = getRandomNumber();
+		});
+
+		$( "#slider" ).slider({
+			value:50,
+			min: 0,
+			max: 100,
+			step: 1,
+			slide: function( event, ui ) {
+				//$( "#amount" ).val( "$" + ui.value );
+				if(ytplayer) ytplayer.setVolume(ui.value);
+			}
 		});
 	});
 
@@ -447,5 +470,29 @@
 		s = Math.floor( Math.random() * total_songs[a]);
 		console.log('s=' + s);
 		return s;
+	}
+
+	function PostToFeed(){
+		if(typeof(now['artist'])=="undefined" || typeof(now['title']) == "undefined"|| now['artist'] == null || now['title'] == null){
+					alert('Post was not published.');
+		}else{
+			FB.ui(
+			{
+				method: 'feed',
+				name: 'OTOMAGIC',
+				link: 'http://otomagic.me',
+				picture: 'http://otomagic.me/images/logo_medium.png',
+				caption: 'Listen to favorite music in OTOMAGIC.',
+				description: 'Now hearing ' + now['title'] +' of ' + now['artist'] + '.',
+			},
+			function(response) {
+				if (response && response.post_id) {
+					alert('Post was published.');
+				} else {
+					alert('Post was not published.');
+				}
+			}
+			);
+		}
 	}
 </script>
