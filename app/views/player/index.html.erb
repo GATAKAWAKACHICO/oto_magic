@@ -66,9 +66,9 @@
 		</div>
 		<div id="controllers">
 			<div id="controller">
-				<%= image_tag 'otomagic_button/stop.png', :id => 'stop_btn' %>
-				<%= image_tag 'otomagic_button/playbutton.png', :id => 'play_btn' %>
-				<%= image_tag 'otomagic_button/nextbutton.png', :id => 'next_btn' %>
+				<%= image_tag 'otomagic_button/stop.png', :id => 'stop_btn', :style => 'cursor:pointer' %>
+				<%= image_tag 'otomagic_button/playbutton.png', :id => 'play_btn', :style => 'cursor:pointer' %>
+				<%= image_tag 'otomagic_button/nextbutton.png', :id => 'next_btn', :style => 'cursor:pointer' %>
 			</div>
 			<div id="volume">
 				<%= image_tag 'volumebutton.png', :id => 'vol', :style => 'vertical-align:middle; float:left;' %>
@@ -107,6 +107,8 @@
 	var ytdataflg = 0;
 	var m = 0;
 	var n;
+	var next_btn = document.getElementById('next_btn');
+	var next_btn_flg = false;
 	var now,next,next2,next3;
 	var playlist = ["init", "init", "init"]; //songs now plays, the next, and the next to next
 	var playlist1 = "init";
@@ -240,6 +242,7 @@
 		}
 		url = '/user_artists/like?users[organizer]=' + organizer + ids;
 		getLikeArtistsData(url);
+		k = AllVals.length;
 		$("#choose-friends").hide();
 		$("#loading1").show();
 	}
@@ -327,7 +330,7 @@
 					}
 					a++;
 					console.log('a=' + a);
-					console.log('music=' + music[getRandomNumber()]['title'] + music[5]['artist']);
+					console.log('music=' + music[getRandomNumber()]['title']);
 				}
 			});
 		}else{
@@ -371,26 +374,35 @@
 		});
 		
 		$("#next_btn").click(function(){
-			getMusicData();
-			if(playlist1 == "init"){
-				playlist1 = getRandomNumber();
-				playlist2 = getRandomNumber();
+			checkButtonStatus();
+			if(!next_btn_flg){
+				getMusicData();
+				if(playlist1 == "init"){
+					playlist1 = getRandomNumber();
+					playlist2 = getRandomNumber();
+					playlist3 = getRandomNumber();
+				}else{
+					if(a < k){
+						playlist1 = getRandomNumber();
+						playlist2 = getRandomNumber();
+						playlist3 = getRandomNumber();
+					}else{
+						$("#artist-next").text('Artist:' + music[playlist2]['artist']);
+						$("#title-next").text('Title:' + music[playlist2]['title']);
+						$("#artist-after-next").text('Artist:' + music[playlist3]['artist']);
+						$("#title-after-next").text('Title:' + music[playlist3]['title']);
+					}
+				}
+				now = music[playlist1];
+				ytplayer.cueVideoByUrl(now['url']);
+				ytplayer.playVideo();
+				$("#artist").text('Artist:' + now['artist']);
+				$("#title").text('Title:' + now['title']);
+				$('#who-likes').text(now['user_name']);
+				playlist1 = playlist2;
+				playlist2 = playlist3;
 				playlist3 = getRandomNumber();
-			}else{
-				$("#artist-next").text('Artist:' + music[playlist2]['artist']);
-				$("#title-next").text('Title:' + music[playlist2]['title']);
-				$("#artist-after-next").text('Artist:' + music[playlist3]['artist']);
-				$("#title-after-next").text('Title:' + music[playlist3]['title']);
 			}
-			now = music[playlist1];
-			ytplayer.cueVideoByUrl(now['url']);
-			ytplayer.playVideo();
-			$("#artist").text('Artist:' + now['artist']);
-			$("#title").text('Title:' + now['title']);
-			$('#who-likes').text(now['user_name']);
-			playlist1 = playlist2;
-			playlist2 = playlist3;
-			playlist3 = getRandomNumber();
 		});
 
 		$( "#slider" ).slider({
@@ -408,9 +420,11 @@
 		function onYouTubePlayerReady(playerId) {
 			ytplayer = document.getElementById("myytplayer");
 			if (ytplayer){
-				playlist1 = getRandomNumber();
-				playlist2 = getRandomNumber();
-				playlist3 = getRandomNumber();
+				if (playlist1 == "init"){
+					playlist1 = getRandomNumber();
+					playlist2 = getRandomNumber();
+					playlist3 = getRandomNumber();
+				}
 				now = music[playlist1];
 				ytplayer.cueVideoByUrl(now['url']);
 				$("#artist").text('Artist:' + now['artist']);
@@ -422,17 +436,24 @@
 
 
 		function onYouTubePlayerStateChange(state) {
-			if(a != 0 && state == 0){
+			checkButtonStatus();
+			if(a != 0 && state == 0 && next_btn_flg == false){
 				getMusicData();
 				if(playlist1 == "init"){
 					playlist1 = getRandomNumber();
 					playlist2 = getRandomNumber();
 					playlist3 = getRandomNumber();
 				}else{
-					$("#artist-next").text('Artist:' + music[playlist2]['artist']);
-					$("#title-next").text('Title:' + music[playlist2]['title']);
-					$("#artist-after-next").text('Artist:' + music[playlist3]['artist']);
-					$("#title-after-next").text('Title:' + music[playlist3]['title']);
+					if(a < k){
+						playlist1 = getRandomNumber();
+						playlist2 = getRandomNumber();
+						playlist3 = getRandomNumber();
+					}else{
+						$("#artist-next").text('Artist:' + music[playlist2]['artist']);
+						$("#title-next").text('Title:' + music[playlist2]['title']);
+						$("#artist-after-next").text('Artist:' + music[playlist3]['artist']);
+						$("#title-after-next").text('Title:' + music[playlist3]['title']);
+					}
 				}
 				now = music[playlist1];
 				ytplayer.cueVideoByUrl(now['url']);
@@ -451,25 +472,17 @@
 		r = Math.floor( Math.random() * music.length );
 		//console.log('random=' + r);
 		return r;
-	}
+	}	
 
-	function getRandomNumberInTotalSongs(){
-		if(a <= total_songs.length){
-			s = Math.floor( Math.random() * total_songs[a-1]);
-			for (i = 0; i < a-1; i++){
-				s += total_songs[i];
-			}
-			return s;
+	function checkButtonStatus(){
+		if(!next_btn.disabled){
+			next_btn.disabled = true;
+			next_btn_flg = true;
+
 		}else{
-			a = 0;
-			t = 1;
+			next_btn.disabled = false;
+			next_btn_flg = false;
 		}
-	}
-
-	function getFirstRandomNumber(){
-		s = Math.floor( Math.random() * total_songs[a]);
-		console.log('s=' + s);
-		return s;
 	}
 
 	function PostToFeed(){

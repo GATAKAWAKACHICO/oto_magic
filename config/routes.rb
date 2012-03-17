@@ -1,4 +1,8 @@
 OtoMagic::Application.routes.draw do
+  get "report/index"
+
+  get "howto/index"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

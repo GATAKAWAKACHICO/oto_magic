@@ -1,0 +1,12 @@
+<div>Report the Url which you don't like.</div>
+<div style="margin:20px auto 5px; text-align:left; width:400px;">
+<%= form_tag({ :controller => 'report', :action => 'submit'}) do %>
+<%= label :posts, :name %>
+<%= text_field :posts, :name, {:size => 25} %><br />
+<%= label :posts, :url %>
+<%= text_field :posts, :url, {:size => 25} %><br />
+</div>
+<div style="margin:auto; width:400px;">
+<%= submit_tag 'submit' %>
+</div>
+<% end %>

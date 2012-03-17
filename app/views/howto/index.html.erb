@@ -1,0 +1,43 @@
+<div style="margin:20px auto 5px;">
+<span id="english-select" style="color:#00ccff; cursor:pointer;">English</span> | <span id="japanese-select" style="cursor:pointer;">Japanese</span>
+</div>
+<div style="width:600px; margin:auto; height:400px; padding-top:100px;">
+	<div id="about" style="margin:auto; width:420px;">
+		<div id="about-english" style="margin:auto; width:420px;">
+			&quot;OTO MAGIC&quot; is the Facebook application which enriches your music life. <br>
+			All you have to do is choosing your friends and &quot;Oto Magic&quot; will automatically play their favorite songs.<br>
+			<a href="#" style="color:#00ccff; cursor:pointer; margin:auto;" onclick="">see how to use.</a>
+		</div>
+		<div id="about-japanese" style="margin:auto; width:420px; display:none;">
+			「友達の数だけ音楽がある」<br>
+			&quot;OTOMAGIC&quot;は、あなたの生活を音楽で満たしてくれる素敵なDJアプリです。あなたの友達が大好きな曲をyoutubeから自動で選び、再生してくれます。<br>
+			OTOMAGICがあれば、寂しい夜も、友達と一緒の日も、家族団らんにも、あなたのそばには、ずっと音楽が。<br>
+			<a href="#" style="color:#00ccff; cursor:pointer; margin:auto;" onclick="">音マジックの使い方をみる</a>
+		</div>
+	</div>
+	<div id="howto" style="margin:auto; width:420px; display:none;">
+		<div id="">
+		</div>
+		<div id="">
+		</div>
+	</div>
+</div>
+<script>
+$(function(){
+	$("#english-select").click(function(){
+		$("#english-select").css("color", "#00ccff");
+		$("#japanese-select").css("color","#000000");
+		$("#about-japanese").hide(100, function(){
+			$("#about-english").show(100);
+		});
+	});
+
+	$("#japanese-select").click(function(){
+		$("#english-select").css("color", "#000000");
+		$("#japanese-select").css("color","#00ccff");
+		$("#about-english").hide(100, function(){
+			$("#about-japanese").show(100);
+		});
+	});
+});
+</script>
