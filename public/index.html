@@ -130,12 +130,12 @@
 							$("#loading").show();
 							FB.login(function(response) {
 								if (response.authResponse) {
-										console.log('Welcome!  Fetching your information.... ');
+										//console.log('Welcome!  Fetching your information.... ');
 										FB.api('/me', function(response){
 											AuthUserData(response.id, response.name, response.gender);
 										});
 								} else {
-										console.log('User cancelled login or did not fully authorize.');
+										//console.log('User cancelled login or did not fully authorize.');
 								}
 							}, {scope: 'publish_stream, email,user_about_me,friends_about_me,user_interests,friends_interests,user_likes,friends_likes'});
 			}
@@ -147,13 +147,13 @@
 					data: "user[facebook_id]=" + id + "&user[facebook_name]=" + name + "&user[facebook_gender]=" + gender,
 					dataType: 'json',
 					error: function(){
-						console.log('server error.');
+						//console.log('server error.');
 					},
 					success: function(json){
 						if(json.status == "ok"){
 							location.href = "/mypage";
 						}else{
-							console.log('login error.');
+							//console.log('login error.');
 						}
 					}
 			});

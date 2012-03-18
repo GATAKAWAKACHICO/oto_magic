@@ -1,43 +1,85 @@
+<%= javascript_include_tag 'jquery.lightbox-0.5.js' %>
+<%= stylesheet_link_tag 'jquery.lightbox-0.5.css' %>
 <div style="margin:20px auto 5px;">
-<span id="english-select" style="color:#00ccff; cursor:pointer;">English</span> | <span id="japanese-select" style="cursor:pointer;">Japanese</span>
+<span id="english-select" style="color:#00ccff; cursor:pointer;" onclick="selectLangEn()">English</span> | <span id="japanese-select" style="cursor:pointer;" onclick="selectLangJa()">Japanese</span>
 </div>
 <div style="width:600px; margin:auto; height:400px; padding-top:100px;">
 	<div id="about" style="margin:auto; width:420px;">
 		<div id="about-english" style="margin:auto; width:420px;">
 			&quot;OTO MAGIC&quot; is the Facebook application which enriches your music life. <br>
 			All you have to do is choosing your friends and &quot;Oto Magic&quot; will automatically play their favorite songs.<br>
-			<a href="#" style="color:#00ccff; cursor:pointer; margin:auto;" onclick="">see how to use.</a>
+			<div style="margin:10px auto 10px;"><a href="#" id="show-how-to-en" style="color:#00ccff; cursor:pointer; margin:10px auto 10px;" onclick="showHowtoEn()">See how to use this app.</a></div>
 		</div>
 		<div id="about-japanese" style="margin:auto; width:420px; display:none;">
-			「友達の数だけ音楽がある」<br>
-			&quot;OTOMAGIC&quot;は、あなたの生活を音楽で満たしてくれる素敵なDJアプリです。あなたの友達が大好きな曲をyoutubeから自動で選び、再生してくれます。<br>
+			「友達の数だけ音楽と出会える」<br>
+			&quot;OTOMAGIC&quot;は、あなたの生活を音楽で満たしてくれるDJアプリです。あなたの友達が大好きな曲をyoutubeから自動で選び、再生してくれます。<br>
 			OTOMAGICがあれば、寂しい夜も、友達と一緒の日も、家族団らんにも、あなたのそばには、ずっと音楽が。<br>
-			<a href="#" style="color:#00ccff; cursor:pointer; margin:auto;" onclick="">音マジックの使い方をみる</a>
+			<div style="margin:10px auto 10px;"><a href="#" id="show-how-to-ja" style="color:#00ccff; cursor:pointer;" onclick="showHowtoJa()">OTOMAGICの使い方をみる</a></div>
 		</div>
 	</div>
-	<div id="howto" style="margin:auto; width:420px; display:none;">
-		<div id="">
+	<div id="howto" style="margin:auto; width:600px;">
+		<div id="howto-english" style="display:none; margin:auto; text-align:left;">
+			<p style="margin:auto;">how to use</p>
+			Step 1. Visit <a href="/" style="color:#00ccff; target="_blank">http://otomagic.me/</a>. Click &quot;Sign in with facebook&quot; below.<br>
+			Step 2. Push START!<br>
+			Step 3. Push &quot;Make a Group, Listen to Music&quot;!<br>
+			Step 4. Push &quot;START DJ&quot;! Enjoy your party time with OTOMAGIC!!<br>
 		</div>
-		<div id="">
+		<div id="howto-japanese" style="display:none; margin:auto; text-align:left;">
+			<p style="margin:auto; text-align:center;">- つかいかた -</p>
+			step 1. <a href="/" style="color:#00ccff; target="_blank">http://otomagic.me/</a>にアクセスし、ターンテーブル下の&quot;Sign in with facebook&quot;をクリック。<br>
+			step 2. あなたの好きなアーティストが表示されます。青色のSTARTボタンをクリック。<br>
+			step 3. &quot;Make a Group, Listen to Music&quot;をクリック。他にOTOMAGICを使っている友達の情報が読み込まれます。<br>
+			step 4. 青色の&quot;START DJ&quot;ボタンを押して、OTOMAGICな音楽をお楽しみください！<br>
+			<div style="margin:10px auto 10px;">OTOMAGICを操作するのに必要な知識はこれだけです。<br>
+			さらに詳しくOTOMAGICについて知りたい方はこちらをご覧ください。<br>
+			</div>
+			<div id="gallery" style="margin:20px auto 10px; text-align:center;">
+				<a href="/images/step1.jpg"><img src="/images/thumb_step1.jpg" width="72" height="36" alt="" /></a> 
+				<a href="/images/step2.jpg"><img src="/images/thumb_step2.jpg" width="72" height="36" alt="" /></a> 
+				<a href="/images/step3.jpg"><img src="/images/thumb_step3.jpg" width="72" height="36" alt="" /></a> 
+			</div>
 		</div>
 	</div>
 </div>
 <script>
-$(function(){
-	$("#english-select").click(function(){
-		$("#english-select").css("color", "#00ccff");
-		$("#japanese-select").css("color","#000000");
-		$("#about-japanese").hide(100, function(){
-			$("#about-english").show(100);
-		});
-	});
+var pageflg = 0;
 
-	$("#japanese-select").click(function(){
-		$("#english-select").css("color", "#000000");
-		$("#japanese-select").css("color","#00ccff");
-		$("#about-english").hide(100, function(){
-			$("#about-japanese").show(100);
-		});
-	});
+$(function(){
+	$('#gallery a').lightBox({fixedNavigation:true});
 });
+
+function selectLangEn(){
+	$("#english-select").css("color", "#00ccff");
+	$("#japanese-select").css("color","#000000");
+	$("#howto-japanese").hide(100);
+	$("#about-japanese").hide(100, function(){
+		$("#about-english").show(100);
+	});
+}
+
+function selectLangJa(){
+	$("#english-select").css("color", "#000000");
+	$("#japanese-select").css("color","#00ccff");
+	$("#howto-english").hide(100);
+	$("#about-english").hide(100, function(){
+				$("#about-japanese").show(100);
+	});
+}
+
+function showHowtoEn(){
+	$("#about-english").hide(100, function(){
+		$("#howto-english").show(100);
+	});
+}
+
+function showHowtoJa(){
+	$("#about-japanese").hide(100, function(){
+		$("#howto-japanese").show(100);
+	});
+}
+
+function makeflg(flg){
+	pageflg = flg;
+}
 </script>

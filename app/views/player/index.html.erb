@@ -78,6 +78,9 @@
 			<div id="share-on-social">
 				<a href="javascript:void(0)" style="color:#00ccff;" onclick="PostToFeed(); return false;">share on facebook</a>
 			</div>
+			<div id="report-unlike-music" style="padding:10px;">
+				<a href="/report" style="color:#00ccff;" target="_blank">report unlike music</a>
+			</div>
 		</div>
 	</div>
 	<div id="record-display" style="float:left;">
@@ -100,6 +103,7 @@
 	var likes;
 	var max_num = 0;
 	var artists = new Array();//artist*facebook_id*facebook_name
+	var artists_arr = new Array(); //arrangement of var artists
 	var k = 0; //human number of groups
 	var a = 0; //the number of Using YtAPI
 	var t = 0;
@@ -287,7 +291,12 @@
 									artists[artists.length] = likes[j][i].user_artist.artist_name + '*' + likes[j][i].user_artist.facebook_name;
 								}	
 							}
-						}	
+						}
+
+						for (i = 0; i < artists.length; i++){
+							artists_arr[artists_arr.length] = artists[getRandomNumberInArtistsNum()];
+						}
+						artists = artists_arr;
 					}
 					console.log(artists);
 					getMusicData();
@@ -299,8 +308,9 @@
 	function getMusicData(){
 		if(a < artists.length && t == 0){
 			word = artists[a].split('*');
+			artist_name = word[0];
 			facebook_name = word[1];
-			word = word[0].replace('/\s/','+');
+			word = filltering(artist_name);
 			url = "http://gdata.youtube.com/feeds/api/videos?q=" + word + "&format=5&alt=json";
 			$.ajax({
 				url: url,
@@ -313,22 +323,25 @@
 				},
 				success: function (json){
 					var musicdata = {};
-					for(i = 0; i < json.feed.entry.length; i++){
-						musicdata = {};
-						musicdata['url'] = json.feed.entry[i].media$group.media$content[0].url;
-						musicdata['artist'] = word;
-						musicdata['title'] = json.feed.entry[i].media$group.media$title.$t;
-						musicdata['user_name'] = facebook_name;
-						music.push(musicdata);
+					if(typeof(json) != 'undefined'){
+						for(i = 0; i < json.feed.entry.length; i++){
+							musicdata = {};
+							musicdata['url'] = json.feed.entry[i].media$group.media$content[0].url;
+							musicdata['artist'] = artist_name;
+							musicdata['title'] = json.feed.entry[i].media$group.media$title.$t;
+							musicdata['user_name'] = facebook_name;
+							music.push(musicdata);
+						}
+						total_songs.push(json.feed.entry.length);
+						console.log(total_songs);
+						if(a == 0){
+							$("#loading1").hide();
+							$("#play-screen-otomagic").show();
+						}
+						a++;
+					}else{
+						a++;
 					}
-
-					total_songs.push(json.feed.entry.length);
-					console.log(total_songs);
-					if(a == 0){
-						$("#loading1").hide();
-						$("#play-screen-otomagic").show();
-					}
-					a++;
 					console.log('a=' + a);
 					console.log('music=' + music[getRandomNumber()]['title']);
 				}
@@ -339,6 +352,15 @@
 			console.log('a=' + a);								
 		}	
 	}	
+	
+	function filltering(search_word){
+		w = search_word.replace('/\s/','+');
+		if (w.indexOf('AKB48') != -1){
+			w = 'PV+AKB48+公式';
+		}
+		w += '+-弾いてみた+-歌ってみた+-カバー+-cover';
+		return w;
+	}
 
 	$(function(){
 		var cnt1 = 0;
@@ -430,6 +452,9 @@
 				$("#artist").text('Artist:' + now['artist']);
 				$("#title").text('Title:' + now['title']);
 				$("#who-likes").text(now['user_name']);
+				playlist1 = playlist2;
+				playlist2 = playlist3;
+				playlist3 = getRandomNumber();
 			}
 			ytplayer.addEventListener('onStateChange', 'onYouTubePlayerStateChange' );
 		}	
@@ -472,7 +497,12 @@
 		r = Math.floor( Math.random() * music.length );
 		//console.log('random=' + r);
 		return r;
-	}	
+	}
+
+	function getRandomNumberInArtistsNum(){
+		grninum = Math.floor( Math.random() * artists.length );
+		return grninum;
+	}
 
 	function checkButtonStatus(){
 		if(!next_btn.disabled){
