@@ -283,7 +283,7 @@
 							}else{
 								if(likes[i].length > likes[i-1].length){
 									max_num = likes[i].length;
-								}else{
+								}else if(likes[i].length <= likes[i-1].length){
 									max_num = likes[i-1].length;
 								}
 							}
@@ -300,7 +300,7 @@
 						}
 
 						for (i = 0; i < artists.length; i++){
-							artists_arr[artists_arr.length] = artists[getRandomNumberInArtistsNum()];
+							artists_arr[artists_arr.length] = artists[getRandomNumber()];
 						}
 						artists = artists_arr;
 					}
@@ -414,16 +414,16 @@
 				getMusicData();
 				seekbar.slider( "value" , 0);
 				if(playlist1 == "init"){
-					playlist1 = getRandomNumber();
-					playlist2 = getRandomNumber();
-					playlist3 = getRandomNumber();
+					playlist1 = getRandomNumberInArtistsNum();
+					playlist2 = getRandomNumberInArtistsNum();
+					playlist3 = getRandomNumberInArtistsNum();
 					$("#artist-next").text('Now Selecting...');
 					$("#artist-after-next").text('Now Selecting...');
 				}else{
 					if(a < k){
-						playlist1 = getRandomNumber();
-						playlist2 = getRandomNumber();
-						playlist3 = getRandomNumber();
+						playlist1 = getRandomNumberInArtistsNum();
+						playlist2 = getRandomNumberInArtistsNum();
+						playlist3 = getRandomNumberInArtistsNum();
 					}else{
 						$("#artist-next").text('Artist:' + music[playlist2]['artist']);
 						$("#title-next").text('Title:' + music[playlist2]['title']);
@@ -439,7 +439,7 @@
 				$('#who-likes').text(now['user_name']);
 				playlist1 = playlist2;
 				playlist2 = playlist3;
-				playlist3 = getRandomNumber();
+				playlist3 = getRandomNumberInArtistsNum();
 			}
 		});
 
@@ -475,9 +475,9 @@
 			ytplayer = document.getElementById("myytplayer");
 			if (ytplayer){
 				if (playlist1 == "init"){
-					playlist1 = getRandomNumber();
-					playlist2 = getRandomNumber();
-					playlist3 = getRandomNumber();
+					playlist1 = getRandomNumberInArtistsNum();
+					playlist2 = getRandomNumberInArtistsNum();
+					playlist3 = getRandomNumberInArtistsNum();
 					$("#artist-next").text('Now Selecting...');
 					$("#artist-after-next").text('Now Selecting...');
 				}
@@ -488,7 +488,7 @@
 				$("#who-likes").text(now['user_name']);
 				playlist1 = playlist2;
 				playlist2 = playlist3;
-				playlist3 = getRandomNumber();
+				playlist3 = getRandomNumberInArtistsNum();
 			}
 			ytplayer.addEventListener('onStateChange', 'onYouTubePlayerStateChange' );
 		}	
@@ -500,16 +500,16 @@
 				getMusicData();
 				seekbar.slider( "value" , 0);
 				if(playlist1 == "init"){
-					playlist1 = getRandomNumber();
-					playlist2 = getRandomNumber();
-					playlist3 = getRandomNumber();
+					playlist1 = getRandomNumberInArtistsNum();
+					playlist2 = getRandomNumberInArtistsNum();
+					playlist3 = getRandomNumberInArtistsNum();
 					$("#artist-next").text('Now Selecting...');
 					$("#artist-after-next").text('Now Selecting...');
 				}else{
 					if(a < k){
-						playlist1 = getRandomNumber();
-						playlist2 = getRandomNumber();
-						playlist3 = getRandomNumber();
+						playlist1 = getRandomNumberInArtistsNum();
+						playlist2 = getRandomNumberInArtistsNum();
+						playlist3 = getRandomNumberInArtistsNum();
 					}else{
 						$("#artist-next").text('Artist:' + music[playlist2]['artist']);
 						$("#title-next").text('Title:' + music[playlist2]['title']);
@@ -525,21 +525,21 @@
 				$('#who-likes').text(now['user_name']);
 				playlist1 = playlist2;
 				playlist2 = playlist3;
-				playlist3 = getRandomNumber();
+				playlist3 = getRandomNumberInArtistsNum();
 			}else if(a != 0 && state == 2){
 				getMusicData();
 				seekbar.slider( "value" , 0);
 				if(playlist1 == "init"){
-					playlist1 = getRandomNumber();
-					playlist2 = getRandomNumber();
-					playlist3 = getRandomNumber();
+					playlist1 = getRandomNumberInArtistsNum();
+					playlist2 = getRandomNumberInArtistsNum();
+					playlist3 = getRandomNumberInArtistsNum();
 					$("#artist-next").text('Now Selecting...');
 					$("#artist-after-next").text('Now Selecting...');
 				}else{
 					if(a < k){
-						playlist1 = getRandomNumber();
-						playlist2 = getRandomNumber();
-						playlist3 = getRandomNumber();
+						playlist1 = getRandomNumberInArtistsNum();
+						playlist2 = getRandomNumberInArtistsNum();
+						playlist3 = getRandomNumberInArtistsNum();
 					}else{
 						$("#artist-next").text('Artist:' + music[playlist2]['artist']);
 						$("#title-next").text('Title:' + music[playlist2]['title']);
@@ -555,7 +555,7 @@
 				$('#who-likes').text(now['user_name']);
 				playlist1 = playlist2;
 				playlist2 = playlist3;
-				playlist3 = getRandomNumber();
+				playlist3 = getRandomNumberInArtistsNum();
 			}
 			console.log('state=' + state);
 		}
@@ -567,8 +567,25 @@
 	}
 
 	function getRandomNumberInArtistsNum(){
-		grninum = Math.floor( Math.random() * artists.length );
-		return grninum;
+		tnum = 0;
+		mnum = 0;
+		if(a == 0 || a == 1){
+			mnum = getRandomNumber();
+		}else if(a != 0 && a <= total_songs.length){
+			for (i = 2; i< total_songs.length; i++){
+				tnum += parseInt(total_songs[i-2]);
+			}
+			console.log('tnum='+ tnum);
+			mnum = Math.floor( Math.random() * tnum);
+			console.log('mnumMathFloor='+ mnum);
+			tl = total_songs.length - 1;
+			console.log('tl=' + tl);
+			mnum += parseInt(total_songs[tl]);
+		}else if(a != 0 && a > total_songs.length){
+			mnum = getRandomNumber();
+		}
+		console.log('mnum=' + mnum);
+		return mnum;
 	}
 	
 	function moveSeekbar(){
