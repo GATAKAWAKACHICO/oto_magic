@@ -66,9 +66,14 @@
 		</div>
 		<div id="controllers">
 			<div id="controller">
-				<%= image_tag 'otomagic_button/stop.png', :id => 'stop_btn', :style => 'cursor:pointer' %>
-				<%= image_tag 'otomagic_button/playbutton.png', :id => 'play_btn', :style => 'cursor:pointer' %>
-				<%= image_tag 'otomagic_button/nextbutton.png', :id => 'next_btn', :style => 'cursor:pointer' %>
+				<%= image_tag 'otomagic_button/stop.png', :id => 'stop_btn', :style => 'cursor:pointer; float:left;' %>
+				<%= image_tag 'otomagic_button/playbutton.png', :id => 'play_btn', :style => 'cursor:pointer; float:left; margin-left: 5px;' %>
+				<div id="seek" style="float:left;">
+					<div id="slider2" style="width:200px; float:left; position:relative; margin-top:5px; margin-left:12px;"></div>
+					<div class="clear"></div>
+				</div>
+				<%= image_tag 'otomagic_button/nextbutton.png', :id => 'next_btn', :style => 'cursor:pointer; float:left;' %>
+				<div class="clear"></div>
 			</div>
 			<div id="volume">
 				<%= image_tag 'volumebutton.png', :id => 'vol', :style => 'vertical-align:middle; float:left;' %>
@@ -76,7 +81,7 @@
 				<div class="clear"></div>
 			</div>
 			<div id="share-on-social">
-				<a href="javascript:void(0)" style="color:#00ccff;" onclick="PostToFeed(); return false;">share on facebook</a>
+				<a href="javascript:void(0)" style="color:#00ccff;" onclick="PostToFeed(); return false;">Like this song</a>
 			</div>
 			<div id="report-unlike-music" style="padding:10px;">
 				<a href="/report" style="color:#00ccff;" target="_blank">report unlike music</a>
@@ -113,6 +118,7 @@
 	var n;
 	var next_btn = document.getElementById('next_btn');
 	var next_btn_flg = false;
+	var seekbar;
 	var now,next,next2,next3;
 	var playlist = ["init", "init", "init"]; //songs now plays, the next, and the next to next
 	var playlist1 = "init";
@@ -329,6 +335,7 @@
 							musicdata['url'] = json.feed.entry[i].media$group.media$content[0].url;
 							musicdata['artist'] = artist_name;
 							musicdata['title'] = json.feed.entry[i].media$group.media$title.$t;
+							shortenchar(musicdata['title']);
 							musicdata['user_name'] = facebook_name;
 							music.push(musicdata);
 						}
@@ -353,13 +360,17 @@
 		}	
 	}	
 	
-	function filltering(search_word){
-		w = search_word.replace('/\s/','+');
-		if (w.indexOf('AKB48') != -1){
-			w = 'PV+AKB48+公式';
+	function filltering(char){
+		char.replace('/\s/','+');
+		if (char.indexOf('AKB48') != -1){
+			char = 'PV+AKB48+公式';
 		}
-		w += '+-弾いてみた+-歌ってみた+-カバー+-cover';
-		return w;
+		char += '+-弾いてみた+-歌ってみた+-カバー+-cover+-弾き語り+-インタビュー+-踊ってみた';
+		return char;
+	}
+
+	function shortenchar(char){
+		if (char > 20) char.substring(0, 20);
 	}
 
 	$(function(){
@@ -383,8 +394,10 @@
 			setInterval(RotateRecord2, b);
 			setInterval(RotateRecord3, c);
 		}
-		ManageRotateSpeed(100,20,50);
-		
+
+		ManageRotateSpeed(100,20,50);		
+		setInterval(moveSeekbar, 1000);
+
 		$("#play_btn").toggle(function(){
 			if(ytplayer) ytplayer.playVideo();
 		},function(){
@@ -399,10 +412,13 @@
 			checkButtonStatus();
 			if(!next_btn_flg){
 				getMusicData();
+				seekbar.slider( "value" , 0);
 				if(playlist1 == "init"){
 					playlist1 = getRandomNumber();
 					playlist2 = getRandomNumber();
 					playlist3 = getRandomNumber();
+					$("#artist-next").text('Now Selecting...');
+					$("#artist-after-next").text('Now Selecting...');
 				}else{
 					if(a < k){
 						playlist1 = getRandomNumber();
@@ -437,6 +453,22 @@
 				if(ytplayer) ytplayer.setVolume(ui.value);
 			}
 		});
+
+		seekbar = $( "#slider2" ).slider({
+			value: 0,
+			min: 0,
+			max: 100,
+			step: 1,
+			slide: function( event, ui ) {
+				//ytplayer.setVolume(ui.value);
+				if(ytplayer){
+					if(ytplayer.getDuration()!=0){
+						seekpoint = Math.floor( ui.value * ytplayer.getDuration() / 100);
+						ytplayer.seekTo(seekpoint, false);
+					}
+				}
+			}
+		});
 	});
 
 		function onYouTubePlayerReady(playerId) {
@@ -446,6 +478,8 @@
 					playlist1 = getRandomNumber();
 					playlist2 = getRandomNumber();
 					playlist3 = getRandomNumber();
+					$("#artist-next").text('Now Selecting...');
+					$("#artist-after-next").text('Now Selecting...');
 				}
 				now = music[playlist1];
 				ytplayer.cueVideoByUrl(now['url']);
@@ -461,13 +495,46 @@
 
 
 		function onYouTubePlayerStateChange(state) {
-			checkButtonStatus();
-			if(a != 0 && state == 0 && next_btn_flg == false){
+			//checkButtonStatus();
+			if(a != 0 && state == 0){
 				getMusicData();
+				seekbar.slider( "value" , 0);
 				if(playlist1 == "init"){
 					playlist1 = getRandomNumber();
 					playlist2 = getRandomNumber();
 					playlist3 = getRandomNumber();
+					$("#artist-next").text('Now Selecting...');
+					$("#artist-after-next").text('Now Selecting...');
+				}else{
+					if(a < k){
+						playlist1 = getRandomNumber();
+						playlist2 = getRandomNumber();
+						playlist3 = getRandomNumber();
+					}else{
+						$("#artist-next").text('Artist:' + music[playlist2]['artist']);
+						$("#title-next").text('Title:' + music[playlist2]['title']);
+						$("#artist-after-next").text('Artist:' + music[playlist3]['artist']);
+						$("#title-after-next").text('Title:' + music[playlist3]['title']);
+					}
+				}
+				now = music[playlist1];
+				ytplayer.cueVideoByUrl(now['url']);
+				ytplayer.playVideo();
+				$("#artist").text('Artist:' + now['artist']);
+				$("#title").text('Title:' + now['title']);
+				$('#who-likes').text(now['user_name']);
+				playlist1 = playlist2;
+				playlist2 = playlist3;
+				playlist3 = getRandomNumber();
+			}else if(a != 0 && state == 2){
+				getMusicData();
+				seekbar.slider( "value" , 0);
+				if(playlist1 == "init"){
+					playlist1 = getRandomNumber();
+					playlist2 = getRandomNumber();
+					playlist3 = getRandomNumber();
+					$("#artist-next").text('Now Selecting...');
+					$("#artist-after-next").text('Now Selecting...');
 				}else{
 					if(a < k){
 						playlist1 = getRandomNumber();
@@ -503,12 +570,23 @@
 		grninum = Math.floor( Math.random() * artists.length );
 		return grninum;
 	}
+	
+	function moveSeekbar(){
+			if(typeof(ytplayer) != 'undefined'){
+				if(ytplayer){
+					if(ytplayer.getDuration()!=0){
+						currentpointrate = ytplayer.getCurrentTime() / ytplayer.getDuration();
+						seekpoint = Math.floor( currentpointrate * 100);
+						seekbar.slider("value" , seekpoint);
+					}
+				}
+			}	
+	}	
 
 	function checkButtonStatus(){
 		if(!next_btn.disabled){
 			next_btn.disabled = true;
 			next_btn_flg = true;
-
 		}else{
 			next_btn.disabled = false;
 			next_btn_flg = false;
