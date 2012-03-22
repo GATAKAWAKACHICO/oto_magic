@@ -300,7 +300,7 @@
 						}
 
 						for (i = 0; i < artists.length; i++){
-							artists_arr[artists_arr.length] = artists[getRandomNumber()];
+							artists_arr[artists_arr.length] = artists[getRandomNumberFromArtistsNum()];
 						}
 						artists = artists_arr;
 					}
@@ -564,6 +564,11 @@
 		r = Math.floor( Math.random() * music.length );
 		//console.log('random=' + r);
 		return r;
+	}
+	
+	function getRandomNumberFromArtistsNum(){
+		grninum = Math.floor( Math.random() * artists.length );
+		return grninum;
 	}
 
 	function getRandomNumberInArtistsNum(){
