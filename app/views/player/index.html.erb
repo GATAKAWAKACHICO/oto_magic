@@ -304,7 +304,7 @@
 						}
 						//artists = artists_arr;
 					}
-					console.log(artists);
+					//console.log(artists);
 					getMusicData();
 					getMusicData();
 					getMusicData();
@@ -342,7 +342,7 @@
 							music.push(musicdata);
 						}
 						total_songs.push(json.feed.entry.length);
-						console.log(total_songs);
+						//console.log(total_songs);
 						if(a == 0){
 							$("#loading1").hide();
 							$("#play-screen-otomagic").show();
@@ -351,13 +351,13 @@
 					}else{
 						a++;
 					}
-					console.log('a=' + a);
+					//console.log('a=' + a);
 				}
 			});
 		}else{
 			/* nothing to do */	
 			a++;
-			console.log('a=' + a);								
+			//console.log('a=' + a);								
 		}	
 	}	
 	
@@ -588,14 +588,14 @@
 			for (i = 1; i< total_songs.length; i++){
 				tnum += parseInt(total_songs[i-1]);
 			}
-			console.log('tnum='+ tnum);
+			//console.log('tnum='+ tnum);
 			minus = lnum - tnum;
 			mnum = Math.floor( Math.random() * minus);
 			mnum += tnum;
 		}else if(a != 0 && a > artists.length){
 			mnum = getRandomNumber();
 		}
-		console.log('mnum=' + mnum);
+		//console.log('mnum=' + mnum);
 		return mnum;
 	}
 	
