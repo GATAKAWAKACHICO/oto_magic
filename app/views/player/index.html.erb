@@ -475,7 +475,13 @@
 		function onYouTubePlayerReady(playerId) {
 			ytplayer = document.getElementById("myytplayer");
 			if (ytplayer){
-				if (a < k + 1){
+				if(playlist1 == "init"){
+					playlist1 = getRandomNumberInArtistsNum();
+					playlist2 = getRandomNumberInArtistsNum();
+					playlist3 = getRandomNumberInArtistsNum();
+					$("#artist-next").text('Now Selecting...');
+					$("#artist-after-next").text('Now Selecting...');
+				}else if (a < k + 1){
 					playlist1 = getRandomNumberInArtistsNum();
 					playlist2 = getRandomNumberInArtistsNum();
 					playlist3 = getRandomNumberInArtistsNum();
