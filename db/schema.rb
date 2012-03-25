@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120317125932) do
+ActiveRecord::Schema.define(:version => 20120325193000) do
 
   create_table "groups", :force => true do |t|
     t.string   "organizer"
@@ -45,5 +45,7 @@ ActiveRecord::Schema.define(:version => 20120317125932) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "users", ["facebook_id"], :name => "index_users_on_facebook_id", :unique => true
 
 end
