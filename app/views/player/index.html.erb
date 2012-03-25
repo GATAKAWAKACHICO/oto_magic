@@ -251,10 +251,14 @@
 			ids += '&users[ids][]=' + AllVals[i];
 		}
 		url = '/user_artists/like?users[organizer]=' + organizer + ids;
-		getLikeArtistsData(url);
 		k = AllVals.length;
-		$("#choose-friends").hide();
-		$("#loading1").show();
+		if (k >= 5) {
+			alert("You can choose less than 4 friends.");
+		}else{
+			getLikeArtistsData(url);
+			$("#choose-friends").hide();
+			$("#loading1").show();
+		}
 	}
 
 	function getLikeArtistsData(url){
