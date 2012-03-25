@@ -42,19 +42,26 @@
 			</div>
 			<div class="clear"></div>
 		<div id="footer">
-		  <div id="login-image">
-			<a href="javascript:void(0)" onclick="login(); return false;"><img src="/images/Facebook.png"></a>
-		  </div>
-		  <div id="loading" style="display:none;">
-		  	Loading...<br/>
-		  	<img src="/images/ajax-loader.gif">
-		  </div>
-		  <div id="go-to-howto">
-			<a href="/howto" style="color:#00ccff;">How to Use OTOMAGIC</a>
-		  </div>
-		  <div id="we-are" style="margin-top:20px;">
-		  	created by <a href="http://bstnhouse.com/" style="color:#000000; text-decoration:none;">BstnHouse</a>.
-		  </div>
+			<div id="menu-area">	
+		  		<div id="login-image" style="margin:10px auto 0px;">
+					<a href="javascript:void(0)" onclick="login(); return false;"><img src="/images/Facebook.png"></a>
+		  		</div>
+		  		<div id="loading" style="display:none; margin:10px auto 0px;">
+		  			Loading...<br/>
+		  			<img src="/images/ajax-loader.gif">
+		  		</div>
+		  		<div id="go-to-howto" style="margin: 10px auto 5px;">
+					<a href="/howto" style="color:#00ccff; font-size:20px;">How to Use OTOMAGIC</a>
+		  		</div>
+		  	</div>
+			<div id="social-plugins" style="margin:10px auto 10px;">
+				<div class="fb-like" data-href="https://www.facebook.com/otomagic" data-send="true" data-width="450" data-show-faces="true"></div>
+				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://otomagic.me" data-text="OTOMAGIC">Tweet</a>
+				<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+			</div>
+		  	<div id="we-are">
+		  		created by <a href="http://bstnhouse.com/" style="color:#000000; text-decoration:none;" target="_blank">BstnHouse</a>.
+		  	</div>
 		</div>
        </div>
 	  </div>
@@ -69,7 +76,7 @@
 			cookie     : true, // enable cookies to allow the server to access the session
 			xfbml      : true  // parse XFBML
 			});
-			// Additional initialization code here
+			// Additional initialization code here	
 			ctxl = document.getElementById("canvas-left").getContext("2d");
 			ctxr = document.getElementById("canvas-right").getContext("2d");
 		 	int = setInterval(canvasfunc,500);
