@@ -20,52 +20,12 @@
 	<meta property="og:title" content="OTOMAGIC" />
 	<meta property="og:image" content="http://otomagic.me/images/logo_medium.png" />
 	<meta property="og:description" content="OTOMAGIC is the Facebook application which enriches your music life." />
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.1.min.js"></script>
 	<script type="text/javascript" src="/javascripts/jQueryRotate.js"></script>
     <link href="/stylesheets/base.css" rel="Stylesheet" type="text/css" />
 	<link rel="shortcut icon" href="/images/favicon.ico">
   </head>
   <body>
-      <div id="content">
-        <div id="header">
-          <img src="/images/otomagiclogo.png" style="vertical-align:middle;"> BETA
-        </div>
-		<div id="main" style="width:1400px; margin:auto; padding:30px;">
-			<canvas id="canvas-left" width="400" height="290" style="float:left;"></canvas>
-			<canvas id="canvas-right" width="600" height="290" style="float:right;"></canvas>
-			<div id="logo" style="margin:auto;">
-				<div id="logo-image">
-					<img src="/images/logo_medium.png" id="logo-main" style="width:300px; float:left;">
-					<img src="/images/logo_side.png" id="logo-side" style="height:300px; float:left;">
-				</div>		
-				<div id="fb-root"></div>
-			</div>
-			<div class="clear"></div>
-		<div id="footer">
-			<div id="menu-area">	
-		  		<div id="login-image" style="margin:10px auto 0px;">
-					<a href="javascript:void(0)" onclick="login(); return false;"><img src="/images/Facebook.png"></a>
-		  		</div>
-		  		<div id="loading" style="display:none; margin:10px auto 0px;">
-		  			Loading...<br/>
-		  			<img src="/images/ajax-loader.gif">
-		  		</div>
-		  		<div id="go-to-howto" style="margin: 10px auto 5px;">
-					<a href="/howto" style="color:#00ccff; font-size:20px;">How to Use OTOMAGIC</a>
-		  		</div>
-		  	</div>
-			<div id="social-plugins" style="margin:10px auto 10px;">
-				<div class="fb-like" data-href="https://www.facebook.com/otomagic" data-send="true" data-width="450" data-show-faces="true"></div>
-				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://otomagic.me" data-text="OTOMAGIC">Tweet</a>
-				<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-			</div>
-		  	<div id="we-are">
-		  		created by <a href="http://bstnhouse.com/" style="color:#000000; text-decoration:none;" target="_blank">BstnHouse</a>.
-		  	</div>
-		</div>
-       </div>
-	  </div>
-    </div>
 	<script>	
 	/* facebook */
 	  window.fbAsyncInit = function() {
@@ -166,5 +126,45 @@
 			});
 		}
 	</script>
+      <div id="content">
+        <div id="header">
+          <img src="/images/otomagiclogo.png" style="vertical-align:middle;"> BETA
+        </div>
+		<div id="main" style="width:1400px; margin:auto; padding:30px;">
+			<canvas id="canvas-left" width="400" height="290" style="float:left;"></canvas>
+			<canvas id="canvas-right" width="600" height="290" style="float:right;"></canvas>
+			<div id="logo" style="margin:auto;">
+				<div id="logo-image">
+					<img src="/images/logo_medium.png" id="logo-main" style="width:300px; float:left;">
+					<img src="/images/logo_side.png" id="logo-side" style="height:300px; float:left;">
+				</div>		
+				<div id="fb-root"></div>
+			</div>
+			<div class="clear"></div>
+		<div id="footer">
+			<div id="menu-area">	
+		  		<div id="login-image" style="margin:10px auto 0px;">
+					<a href="javascript:void(0)" onclick="login(); return false;"><img src="/images/Facebook.png"></a>
+		  		</div>
+		  		<div id="loading" style="display:none; margin:10px auto 0px;">
+		  			Loading...<br/>
+		  			<img src="/images/ajax-loader.gif">
+		  		</div>
+		  		<div id="go-to-howto" style="margin: 10px auto 5px;">
+					<a href="/howto" style="color:#00ccff; font-size:20px;">How to Use OTOMAGIC</a>
+		  		</div>
+		  	</div>
+			<div id="social-plugins" style="margin:10px auto 10px;">
+				<div class="fb-like" data-href="https://www.facebook.com/otomagic" data-send="true" data-width="450" data-show-faces="true"></div>
+				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://otomagic.me" data-text="OTOMAGIC">Tweet</a>
+				<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+			</div>
+		  	<div id="we-are">
+		  		created by <a href="http://bstnhouse.com/" style="color:#000000; text-decoration:none;" target="_blank">BstnHouse</a>.
+		  	</div>
+		</div>
+       </div>
+	  </div>
+    </div>
   </body>
 </html>
