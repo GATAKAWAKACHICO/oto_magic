@@ -304,9 +304,14 @@
 						}
 
 						for (i = 0; i < artists.length; i++){
-							artists_arr[artists_arr.length] = artists[getRandomNumberFromArtistsNum()];
-						}
-						//artists = artists_arr;
+							if (getZeroOrOne() == 0){
+								artists_arr.push(artists[i]);
+							}else{
+								artists_arr.unshift(artists[i]);
+							}
+						}	
+						//console.log(artists_arr);
+						artists = artists_arr;
 					}
 					//console.log(artists);
 					getMusicData();
@@ -573,6 +578,11 @@
 		//console.log('random=' + r);
 		return r;
 	}
+
+	function getZeroOrOne(){
+		zo = Math.floor( Math.random() * 2 );
+		return zo;
+	}
 	
 	function getRandomNumberFromArtistsNum(){
 		grninum = Math.floor( Math.random() * artists.length );
@@ -633,7 +643,7 @@
 			{
 				method: 'feed',
 				name: 'OTOMAGIC',
-				link: 'http://otomagic.me',
+				link: now['url'],
 				picture: 'http://otomagic.me/images/logo_medium.png',
 				caption: 'Listen to favorite music in OTOMAGIC.',
 				description: 'Now hearing ' + now['title'] +' of ' + now['artist'] + '.',
