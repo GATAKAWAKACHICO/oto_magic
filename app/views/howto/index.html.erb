@@ -3,7 +3,7 @@
 <div style="margin:20px auto 5px;">
 <span id="english-select" style="color:#00ccff; cursor:pointer;" onclick="selectLangEn()">English</span> | <span id="japanese-select" style="cursor:pointer;" onclick="selectLangJa()">Japanese</span>
 </div>
-<div style="width:600px; margin:auto; height:400px; padding-top:100px;">
+<div style="width:600px; margin:auto; height:480px; padding-top:30px;">
 	<div id="about" style="margin:auto; width:420px;">
 		<div id="about-english" style="margin:auto; width:420px;">
 			&quot;OTO MAGIC&quot; is the Facebook application which enriches your music life. <br>
@@ -31,8 +31,15 @@
 			step 2. あなたの好きなアーティストが表示されます。青色のSTARTボタンをクリック。<br>
 			step 3. &quot;Make a Group, Listen to Music&quot;をクリック。他にOTOMAGICを使っている友達の情報が読み込まれます。<br>
 			step 4. 青色の&quot;START DJ&quot;ボタンを押して、OTOMAGICな音楽をお楽しみください！<br>
-			<div style="margin:10px auto 10px;">OTOMAGICを操作するのに必要な知識はこれだけです。<br>
-			<p style="margin:auto; text-align:center;">- 好きなアーティストの登録の仕方 -</p>
+			<div style="margin:10px auto 10px; text-align:center;">OTOMAGICを操作するのに必要な知識はこれだけです。<br>それではOTOMAGICを始めてみましょう。
+				<div id="login-image" style="margin:10px auto 0px;">
+					<a href="javascript:void(0)" onclick="login(); return false;"><img src="/images/Facebook.png"></a>
+				</div>
+				<div id="loading" style="display:none; margin:10px auto 0px;">
+		  			Loading...<br/>
+		  			<img src="/images/ajax-loader.gif">
+				</div>
+				<p style="margin:20px auto 20px; text-align:center;">- 好きなアーティストの登録の仕方 -</p>
 			</div>
 			<div id="gallery" style="margin:20px auto 10px; text-align:center;">
 				<a href="/images/step1.jpg"><img src="/images/thumb_step1.png" width="72" height="36" alt="" /></a> 
@@ -48,6 +55,60 @@ var pageflg = 0;
 $(function(){
 	$('#gallery a').lightBox({fixedNavigation:true});
 });
+	
+/* facebook */
+	window.fbAsyncInit = function() {
+		  	FB.init({
+			appId      : '301955646531244', // App ID
+			channelUrl : '/channel.html', // Channel File
+			status     : true, // check login status
+			cookie     : true, // enable cookies to allow the server to access the session
+			xfbml      : true  // parse XFBML
+			});
+			// Additional initialization code here	
+
+	 };
+	
+		// Load the SDK Asynchronously
+		  (function(d){
+			       var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+				        js = d.createElement('script'); js.id = id; js.async = true;
+						     js.src = "//connect.facebook.net/en_US/all.js";
+							      d.getElementsByTagName('head')[0].appendChild(js);
+								     }(document))
+			    function login(){
+							$("#login-image").hide();
+							$("#loading").show();
+							FB.login(function(response) {
+								if (response.authResponse) {
+										//console.log('Welcome!  Fetching your information.... ');
+										FB.api('/me', function(response){
+											AuthUserData(response.id, response.name, response.gender);
+										});
+								} else {
+										//console.log('User cancelled login or did not fully authorize.');
+								}
+							}, {scope: 'publish_stream, email,user_about_me,friends_about_me,user_interests,friends_interests,user_likes,friends_likes'});
+			}
+
+		function AuthUserData(id, name, gender){
+			$.ajax({
+					url: "/users/login",
+					type: "POST",
+					data: "user[facebook_id]=" + id + "&user[facebook_name]=" + name + "&user[facebook_gender]=" + gender,
+					dataType: 'json',
+					error: function(){
+						//console.log('server error.');
+					},
+					success: function(json){
+						if(json.status == "ok"){
+							location.href = "/mypage";
+						}else{
+							//console.log('login error.');
+						}
+					}
+			});
+		}	
 
 function selectLangEn(){
 	$("#english-select").css("color", "#00ccff");
