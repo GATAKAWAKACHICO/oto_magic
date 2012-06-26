@@ -1,4 +1,6 @@
 OtoMagic::Application.routes.draw do
+  get "user_data_view/index"
+
   get "report/index"
 
   get "howto/index"

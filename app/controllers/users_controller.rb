@@ -27,4 +27,13 @@ class UsersController < ApplicationController
 			end
 		end
 	end
+    
+    def user_data
+        if params[:facebook_id].blank?
+		    render :json => {status:error}
+		else
+            res = User.where({ :facebook_id => params[:facebook_id] }).all
+            render :json => res
+        end
+    end
 end

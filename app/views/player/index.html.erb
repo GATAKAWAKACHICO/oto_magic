@@ -192,10 +192,67 @@
 	function loadAjaxData(){
 		$('#make-a-group').hide();
 		$('#loading2').show();
+        /*
 		for(i = 0; i < fbfriend.data.length; i++){
 			getAjaxData(fbfriend.data[i].id, fbfriend.data[i].name, 'https://graph.facebook.com/' + fbfriend.data[i].id + '/picture');
 		}
+        */
+        getAjaxDataTogether(fbfriend.data);
 	}
+
+    function getAjaxDataTogether(data){
+        request_url = "/users/user_data?";
+        l = data.length;
+            for(i = 0; i < l; i++){
+                request_url += "facebook_id[]=" + data[i].id + '&';
+            }
+        
+        $.ajax({
+				url: request_url,
+				type: 'GET',
+				//data: "id=" + facebook_id,
+				dataType: 'json',
+				error: function(){
+					$("#loading2").text('Sorry, Something goes wrong.');
+				},
+				success: function (json){
+                       progress = 0;
+                    for (i = 0; i < json.length; i++){
+                        picture = 'https://graph.facebook.com/' + json[i].user.facebook_id + '/picture';
+						$('#friends').append('<input type="checkbox" name="omaira" class="otomagic-checkbox" id="'+ json[i].user.facebook_id + '" value="' + json[i].user.facebook_id +'">');
+						$('#friends').append('<img src="' + picture + '">');
+						$('#friends').append( json[i].user.facebook_name+ '<br>');
+						chkboxid.push(json[i].user.facebook_name);
+						chkboxnum++;
+						registration++;
+                        progress++;
+					    progressrate = progress / json.length * 100;
+					    progressrate = Math.floor(progressrate);
+					    $("#progress-rate").text(progressrate);
+ 
+					    if(progress == json.length) {
+						    if(json.length == 0){
+							    $("#friends-message").append("Your Friends haven't logged in OTOMAGIC yet." + "<br>");
+							    $("#friends-message").append("Let's invite your friends to OTOMAGIC!");
+							    $("#friends-message").css('padding-top','100px');
+							    $("#loading2").hide();
+							    $("#friends").show();
+							    $("#start").show();
+						    }else{
+							    $("#friends-message").append("<hr>");
+							    $("#friends-message").append("Your Music Partners!");
+							    $("#friends-message").append("<hr>");
+							    $("#friends-message").css("font-size","22px");
+							    $("#loading2").hide();
+							    $("#friends").show();
+							    $("#start").show();
+						    }
+					    }
+                    }
+				}
+		});
+
+    }
 
 	function getAjaxData(facebook_id, facebook_name, picture){
 		$.ajax({
